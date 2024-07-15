@@ -29,6 +29,13 @@ const ProductSchema = new Schema(
         ref: "Review",
       },
     ],
+    ratings: {
+      star5: { type: Number, default: 0 },
+      star4: { type: Number, default: 0 },
+      star3: { type: Number, default: 0 },
+      star2: { type: Number, default: 0 },
+      star1: { type: Number, default: 0 },
+    },
     gender: {
       type: String,
       enum: ["male", "female", "both"],

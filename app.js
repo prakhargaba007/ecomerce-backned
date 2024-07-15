@@ -1,21 +1,25 @@
+// server.js (or app.js)
 const path = require("path");
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
+const cors = require("cors"); // Import the CORS package
 require("dotenv").config();
 
-app = express();
-port = process.env.PORT || 8080;
+const app = express();
+const port = process.env.PORT || 8080;
+
+// Configure the CORS middleware
+app.use(cors());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "images");
   },
   filename: function (req, file, cb) {
-    cb(null, uuidv4());
+    cb(null, uuidv4() + path.extname(file.originalname));
   },
 });
 
@@ -32,16 +36,6 @@ const fileFilter = (req, file, cb) => {
 };
 
 app.use(bodyParser.json());
-
-// const feedRoutes = require("./routes/feed");F
-const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes");
-const porductRoutes = require("./routes/productRoutes");
-const cartRoutes = require("./routes/cartRoutes");
-const addressRoutes = require("./routes/addressRoutes");
-const paymentRoutes = require("./routes/paymentRoutes");
-const orderRoutes = require("./routes/orderRoutes");
-
 app.use(
   multer({
     storage: storage,
@@ -50,6 +44,7 @@ app.use(
 );
 app.use("/images", express.static(path.join(__dirname, "images")));
 
+// Set CORS headers manually if needed
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -60,14 +55,24 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use("/feed", feedRoutes);
+// Importing routes
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const productRoutes = require("./routes/productRoutes");
+const cartRoutes = require("./routes/cartRoutes");
+const addressRoutes = require("./routes/addressRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
-app.use("/porduct", porductRoutes);
+app.use("/porduct", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/address", addressRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/order", orderRoutes);
+app.use("/review", reviewRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);

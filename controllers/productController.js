@@ -75,10 +75,15 @@ exports.productCategory = async (req, res, next) => {
 
 exports.getProductById = async (req, res, next) => {
   const productId = req.params.productId;
-  console.log(1);
 
   try {
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate({
+      path: "review",
+      populate: {
+        path: "user",
+        select: "name", // Select only the 'name' field from the user
+      },
+    });
     if (!product) {
       const error = new Error("Product not found");
       error.statusCode = 404;
@@ -163,6 +168,7 @@ exports.productCategoryFilter = async (req, res, next) => {
   // console.log(catName);
 
   const { price, fabric, gender, size, color, page = 1 } = req.query;
+  console.log(req.query);
 
   let filter = {};
   if (price) filter.price = { $lte: price };

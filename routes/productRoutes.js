@@ -9,9 +9,11 @@ const router = express.Router();
 // Filter products
 router.get("/filter", productController.filterProducts);
 
-router.get("/category", productController.productCategory);
 
+router.get("/category", productController.productCategory);
 router.get("/category/:catName", productController.productCategoryFilter);
+
+
 // Create a new product
 router.post(
   "/",

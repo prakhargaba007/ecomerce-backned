@@ -187,7 +187,7 @@ exports.forgotPassword = async (req, res, next) => {
     // const resetTokenExpiration = Date.now() + 3600000;
 
     res.status(200).json({ message: "Password reset link sent to your email" });
-    console.log(process.env.FRONTENDLINK);
+    // console.log(process.env.FRONTENDLINK);
 
     return transporter.sendMail({
       from: "cleve.klein78@ethereal.email",

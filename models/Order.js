@@ -27,6 +27,10 @@ const OrderSchema = new Schema(
           type: Number,
           required: true,
         },
+        review: {
+          type: Schema.Types.ObjectId,
+          ref: "Review",
+        },
       },
     ],
     totalPrice: {
