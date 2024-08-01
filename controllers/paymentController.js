@@ -32,7 +32,7 @@ exports.createPayment = async (req, res) => {
         return res.status(500).json({ message: "Something Went Wrong!" });
       }
       res.status(200).json({ data: order });
-      console.log(order);
+      // console.log(order);
     });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error!" });
@@ -41,10 +41,15 @@ exports.createPayment = async (req, res) => {
 };
 
 exports.verifyPayment = async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-    req.body;
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    address,
+    token,
+  } = req.body;
 
-  // console.log("req.body", req.body);
+  console.log("req.body", req.body.token);
 
   try {
     // Create Sign
@@ -71,15 +76,43 @@ exports.verifyPayment = async (req, res) => {
 
       // Save Payment
       await payment.save();
+      console.log(payment._id, address._id);
+      const order = await confirmOrder(payment._id, address._id, token);
 
       // Send Message
-      res.json({
+      res.status(201).json({
         message: "Payement Successfully",
         payment,
+        order,
       });
     }
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error!" });
     console.log(error);
+  }
+};
+
+const confirmOrder = async (paymentId, addressId, token) => {
+  if (!addressId) return;
+
+  try {
+    const response = await fetch(`${process.env.BACKEND_URL}/order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        shippingAddressId: addressId,
+        payment: paymentId,
+      }),
+    });
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error confirming order:", error);
+    // toast.error("Error confirming order");
   }
 };

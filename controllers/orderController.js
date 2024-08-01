@@ -10,6 +10,7 @@ exports.createOrder = async (req, res, next) => {
   try {
     // Find the user
     const user = await User.findById(req.userId).populate("cart");
+    console.log("user", user);
 
     // Check if the user has a cart
     const cart = await Cart.findOne({ user: user._id }).populate(

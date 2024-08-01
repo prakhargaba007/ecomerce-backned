@@ -22,11 +22,13 @@ exports.addToCart = async (req, res, next) => {
 
     const userCart = await Cart.findOne({ user: req.userId });
     if (!userCart) {
+      console.log("not there");
       const newCart = new Cart({
         user: req.userId,
         products: [{ product: productId, quantity }],
         totalPrice: (product.price * +quantity).toFixed(0),
       });
+      console.log(newCart);
 
       await newCart.save();
 
@@ -43,16 +45,27 @@ exports.addToCart = async (req, res, next) => {
     const productIndex = userCart.products.findIndex(
       (p) => p.product.toString() === productId
     );
+    console.log(3, productIndex);
     if (productIndex >= 0) {
+      console.log(1);
       userCart.products[productIndex].quantity += +quantity;
     } else {
+      console.log(2);
       userCart.products.push({ product: productId, quantity });
     }
+    console.log(product.price);
+    console.log(quantity);
+    console.log((product.price * +quantity).toFixed(0));
+    console.log(userCart.totalPrice);
+    console.log(+userCart.totalPrice + +(product.price * +quantity).toFixed(0));
+    console.log(userCart.totalPrice + +(product.price * +quantity).toFixed(0));
+    console.log(userCart.totalPrice + (product.price * +quantity).toFixed(0));
 
-    userCart.totalPrice += (product.price * +quantity).toFixed(0);
+    userCart.totalPrice += +(product.price * +quantity).toFixed(0);
+    // console.log(userCart);
 
     await userCart.save();
-    res.status(200).json({ message: "Product added to cart", cart: userCart });
+    res.status(200).json(userCart);
   } catch (err) {
     next(err);
   }
@@ -113,7 +126,7 @@ exports.updateCart = async (req, res, next) => {
     );
 
     await cart.save();
-    res.status(200).json({ message: "Cart updated successfully", cart });
+    res.status(200).json(cart);
   } catch (err) {
     next(err);
   }
@@ -147,7 +160,7 @@ exports.removeFromCart = async (req, res, next) => {
     cart.products.splice(productIndex, 1);
 
     await cart.save();
-    res.status(200).json({ message: "Product removed from cart", cart });
+    res.status(200).json(cart);
   } catch (err) {
     next(err);
   }
@@ -167,7 +180,7 @@ exports.clearCart = async (req, res, next) => {
     cart.totalPrice = 0;
 
     await cart.save();
-    res.status(200).json({ message: "Cart cleared successfully", cart });
+    res.status(200).json(cart);
   } catch (err) {
     next(err);
   }
